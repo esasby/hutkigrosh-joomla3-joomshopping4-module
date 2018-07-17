@@ -39,4 +39,4 @@ http://mydomen.my/index.php?option=com_jshopping&controller=hutkigrosh&task=noti
  * включите в настройках модуля "Режим песочницы" 
  * для эмуляции оплаты клиентом выставленного счета воспльзуйтесь личным кабинетом [тестовой системы](https://trial.hgrosh.by) (меню _Тест оплаты ЕРИП_)
 
-_Разработано и протестировано с Joomla v.3.8.3 + Commerce v.4.16.3_
+_Разработано и протестировано с Joomla v.3.8.3 + Joomshopping v.4.16.3_
