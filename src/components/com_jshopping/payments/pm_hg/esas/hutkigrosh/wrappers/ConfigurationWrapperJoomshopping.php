@@ -2,8 +2,9 @@
 
 namespace esas\hutkigrosh\wrappers;
 
+use esas\hutkigrosh\ConfigurationFields;
+use esas\hutkigrosh\lang\TranslatorJoom;
 use JSFactory;
-use Logger;
 use pm_hg;
 
 /**
@@ -22,7 +23,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function __construct($pmconfigs = null)
     {
-        parent::__construct();
+        parent::__construct(new TranslatorJoom());
         // если массив настроек не передан в параметрах, загружаем его из БД
         if ($pmconfigs == null) {
             $pm_method = JSFactory::getTable('paymentMethod', 'jshop');
@@ -39,7 +40,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getShopName()
     {
-        return $this->getOption(self::CONFIG_HG_SHOP_NAME);
+        return $this->getOption(ConfigurationFields::SHOP_NAME);
     }
 
     /**
@@ -48,7 +49,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getHutkigroshLogin()
     {
-        return $this->getOption(self::CONFIG_HG_LOGIN, true);
+        return $this->getOption(ConfigurationFields::LOGIN, true);
     }
 
     /**
@@ -57,7 +58,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getHutkigroshPassword()
     {
-        return $this->getOption(self::CONFIG_HG_PASSWORD, true);
+        return $this->getOption(ConfigurationFields::PASSWORD, true);
     }
 
     /**
@@ -66,7 +67,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function isSandbox()
     {
-        return $this->checkOn(self::CONFIG_HG_SANDBOX);
+        return $this->checkOn(ConfigurationFields::SANDBOX);
     }
 
     /**
@@ -75,7 +76,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getEripId()
     {
-        return $this->getOption(self::CONFIG_HG_ERIP_ID, true);
+        return $this->getOption(ConfigurationFields::ERIP_ID, true);
     }
 
     /**
@@ -84,7 +85,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function isEmailNotification()
     {
-        return $this->checkOn(self::CONFIG_HG_EMAIL_NOTIFICATION);
+        return $this->checkOn(ConfigurationFields::EMAIL_NOTIFICATION);
     }
 
     /**
@@ -93,7 +94,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function isSmsNotification()
     {
-        return $this->checkOn(self::CONFIG_HG_SMS_NOTIFICATION);
+        return $this->checkOn(ConfigurationFields::SMS_NOTIFICATION);
     }
 
     /**
@@ -116,7 +117,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getBillStatusPending()
     {
-        return $this->getOption(self::CONFIG_HG_BILL_STATUS_PENDING, true);
+        return $this->getOption(ConfigurationFields::BILL_STATUS_PENDING, true);
     }
 
     /**
@@ -125,7 +126,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getBillStatusPayed()
     {
-        return $this->getOption(self::CONFIG_HG_BILL_STATUS_PAYED, true);
+        return $this->getOption(ConfigurationFields::BILL_STATUS_PAYED, true);
     }
 
     /**
@@ -134,7 +135,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getBillStatusFailed()
     {
-        return $this->getOption(self::CONFIG_HG_BILL_STATUS_FAILED, true);
+        return $this->getOption(ConfigurationFields::BILL_STATUS_FAILED, true);
     }
 
     /**
@@ -143,7 +144,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getBillStatusCanceled()
     {
-        return $this->getOption(self::CONFIG_HG_BILL_STATUS_CANCELED, true);
+        return $this->getOption(ConfigurationFields::BILL_STATUS_CANCELED, true);
     }
 
     private function checkOn($key)
@@ -159,7 +160,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getPaymentMethodDetails()
     {
-        // TODO: Implement getPaymentMethodDescription() method.
+        // TODO: не используется
     }
 
     /**
@@ -168,7 +169,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function isAlfaclickButtonEnabled()
     {
-        return $this->checkOn(self::CONFIG_HG_ALFACLICK_BUTTON);
+        return $this->checkOn(ConfigurationFields::ALFACLICK_BUTTON);
     }
 
     /**
@@ -177,10 +178,10 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function isWebpayButtonEnabled()
     {
-        return $this->checkOn(self::CONFIG_HG_WEBPAY_BUTTON);
+        return $this->checkOn(ConfigurationFields::WEBPAY_BUTTON);
     }
 
-    public function getOption($key, bool $warn = false)
+    public function getOption($key, $warn = false)
     {
         $value = $this->pmconfigs[$key];
         if ($warn)
@@ -195,6 +196,25 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
      */
     public function getPaymentMethodName()
     {
-        // TODO: Implement getPaymentMethodName() method.
+        // TODO: не используется
+    }
+
+    /***
+     * В некоторых CMS не получается в настройках хранить html, поэтому использует текст итогового экрана по умолчанию,
+     * в который проставлятся значение ERIPPATh
+     * @return string
+     */
+    public function getEripPath()
+    {
+        // TODO: не используется
+    }
+
+    /**
+     * Какой срок действия счета после его выставления (в днях)
+     * @return string
+     */
+    public function getDueInterval()
+    {
+        return $this->getOption(ConfigurationFields::DUE_INTERVAL, true);
     }
 }

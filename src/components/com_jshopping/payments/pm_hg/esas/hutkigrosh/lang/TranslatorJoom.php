@@ -10,15 +10,15 @@ namespace esas\hutkigrosh\lang;
  */
 use Joomla\CMS\Factory;
 
-class TranslatorJoom
+class TranslatorJoom extends Translator
 {
     private static $locale = null;
 
-    public static function translate($msg)
+    public function getLocale()
     {
         if (null === self::$locale) {
             self::$locale = $langtag = str_replace("-", "_", Factory::getLanguage()->getTag());
         }
-        return Translator::translate($msg, self::$locale);
+        return self::$locale;
     }
 }

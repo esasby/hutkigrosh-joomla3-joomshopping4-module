@@ -1,5 +1,7 @@
 <?php
 
+use esas\hutkigrosh\utils\LoggerDefault;
+
 require_once(JPATH_SITE . '/components/com_jshopping/payments/pm_hg/vendor/autoload.php');
 
 /**
@@ -26,24 +28,4 @@ class SimpleAutoloader
 
 spl_autoload_register('SimpleAutoloader::loader');
 
-Logger::configure(array(
-    'rootLogger' => array(
-        'appenders' => array('fileAppender'),
-        'level' => 'INFO',
-    ),
-    'appenders' => array(
-        'fileAppender' => array(
-            'class' => 'LoggerAppenderFile',
-            'layout' => array(
-                'class' => 'LoggerLayoutPattern',
-                'params' => array(
-                    'conversionPattern' => '%date{Y-m-d H:i:s,u} | %logger{0} | %-5level | %msg %n%throwable',
-                )
-            ),
-            'params' => array(
-                'file' => JPATH_SITE . '/hutkigrosh.log',
-                'append' => true
-            )
-        )
-    )
-));
+LoggerDefault::init();

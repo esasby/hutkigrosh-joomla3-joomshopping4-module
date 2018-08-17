@@ -2,7 +2,7 @@
   "name": "esas/hutkigrosh-joomla3-joomshopping4-module",
   "description": "Hutkigrosh joomla payment gateway integration",
   "require": {
-    "esas/hutkigrosh-api-php": "v1.3.0"
+    "esas/hutkigrosh-api-php": "v1.4.1"
   },
   "authors": [
     {
