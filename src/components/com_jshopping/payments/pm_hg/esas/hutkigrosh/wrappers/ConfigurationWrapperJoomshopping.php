@@ -108,7 +108,7 @@ class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
     {
         $statictext = JSFactory::getTable("statictext", "jshop");
         $rowstatictext = $statictext->loadData("order_hg_completion_text");
-        return $this->warnIfEmpty($rowstatictext->text);
+        return $this->warnIfEmpty($rowstatictext->text, "completion_text");
     }
 
     /**
