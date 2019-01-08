@@ -1,10 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nikit
- * Date: 09.02.2018
- * Time: 14:51
- */
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 defined('_JEXEC') or die();
 
 use esas\hutkigrosh\controllers\ControllerAlfaclick;

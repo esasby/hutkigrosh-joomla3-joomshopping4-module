@@ -1,6 +1,12 @@
 <?php
-
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 namespace esas\hutkigrosh\wrappers;
+defined('_JEXEC') or die;
 
 use JSFactory;
 

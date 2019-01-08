@@ -1,14 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nikit
- * Date: 01.10.2018
- * Time: 12:05
- */
-
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 namespace esas\hutkigrosh;
 
-
+defined('_JEXEC') or die;
 use esas\hutkigrosh\lang\TranslatorJoom;
 use esas\hutkigrosh\view\admin\ConfigFormJoom;
 use esas\hutkigrosh\wrappers\ConfigurationWrapperJoomshopping;

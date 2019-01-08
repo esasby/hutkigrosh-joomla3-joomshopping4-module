@@ -1,5 +1,10 @@
 <?php
-
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 defined('_JEXEC') or die();
 
 class JshoppingModelHutkigrosh extends JModelLegacy

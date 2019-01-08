@@ -1,9 +1,9 @@
 <?php
 /*
-* @info Платёжный модуль Hutki grosh для JoomShopping
-* @package JoomShopping for Joomla!
-* @subpackage payment
-* @author Esas.by
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
 */
 
 

@@ -1,12 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nikit
- * Date: 14.03.2018
- * Time: 17:08
- */
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 
 namespace esas\hutkigrosh\wrappers;
+defined('_JEXEC') or die;
 
 class OrderProductWrapperJoomshopping extends OrderProductWrapper
 {

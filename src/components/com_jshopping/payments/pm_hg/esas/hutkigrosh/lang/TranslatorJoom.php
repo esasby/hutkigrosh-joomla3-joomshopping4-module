@@ -1,6 +1,12 @@
 <?php
-
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 namespace esas\hutkigrosh\lang;
+defined('_JEXEC') or die;
 
 /**
  * Created by PhpStorm.

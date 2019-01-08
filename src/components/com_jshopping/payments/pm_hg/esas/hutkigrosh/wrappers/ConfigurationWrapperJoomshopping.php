@@ -1,5 +1,10 @@
 <?php
-
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 namespace esas\hutkigrosh\wrappers;
 
 use esas\hutkigrosh\ConfigurationFields;
@@ -7,12 +12,7 @@ use Exception;
 use JSFactory;
 use pm_hg;
 
-/**
- * Created by PhpStorm.
- * User: nikit
- * Date: 13.03.2018
- * Time: 14:44
- */
+defined('_JEXEC') or die;
 class ConfigurationWrapperJoomshopping extends ConfigurationWrapper
 {
     private $pmconfigs;

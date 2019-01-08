@@ -1,4 +1,10 @@
 <?php
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 define('PATH_JSHOPPING', JPATH_SITE . '/components/com_jshopping/');
 
 use esas\hutkigrosh\ConfigurationFields;

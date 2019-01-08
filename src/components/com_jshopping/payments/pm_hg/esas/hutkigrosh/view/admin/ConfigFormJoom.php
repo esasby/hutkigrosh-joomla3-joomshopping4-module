@@ -1,11 +1,10 @@
 <?php
-
-/**
- * Created by PhpStorm.
- * User: nikit
- * Date: 30.09.2018
- * Time: 15:19
- */
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 
 namespace esas\hutkigrosh\view\admin;
 

@@ -1,10 +1,10 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: nikit
- * Date: 28.12.2018
- * Time: 14:32
- */
+/*
+* @info     Платёжный модуль Hutkigrosh для JoomShopping
+* @package  hutkigrosh
+* @author   esas.by
+* @license  GNU/GPL
+*/
 
 use esas\hutkigrosh\ConfigurationFields;
 use esas\hutkigrosh\Registry;
