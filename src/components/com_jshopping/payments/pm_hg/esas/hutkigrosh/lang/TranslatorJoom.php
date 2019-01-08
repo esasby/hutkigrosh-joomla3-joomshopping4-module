@@ -23,7 +23,7 @@ class TranslatorJoom extends TranslatorImpl
     public function getLocale()
     {
         if (null === self::$locale) {
-            Factory::getLanguage()->getTag();
+            self::$locale = Factory::getLanguage()->getTag();
         }
         return self::$locale;
     }
