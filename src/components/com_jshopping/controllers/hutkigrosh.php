@@ -8,8 +8,8 @@
 defined('_JEXEC') or die();
 
 use esas\hutkigrosh\controllers\ControllerAlfaclick;
-use esas\hutkigrosh\controllers\ControllerNotifyJoomshopping;
-use esas\hutkigrosh\wrappers\ConfigurationWrapperJoomshopping;
+use esas\hutkigrosh\controllers\ControllerNotify;
+use esas\hutkigrosh\utils\Logger as HgLogger;
 
 require_once(JPATH_SITE . '/components/com_jshopping/payments/pm_hg/pm_hg.php');
 require_once(JPATH_SITE . '/components/com_jshopping/models/hutkigrosh.php');
@@ -21,9 +21,12 @@ class JshoppingControllerHutkigrosh extends JshoppingControllerBase
      */
     function alfaclick()
     {
-        $controller = new ControllerAlfaclick(new ConfigurationWrapperJoomshopping());
-        $controller->process($_REQUEST['billid'], $_REQUEST['phone']);
-        die();
+        try {
+            $controller = new ControllerAlfaclick();
+            $controller->process($_REQUEST['billid'], $_REQUEST['phone']);
+        } catch (Throwable $e) {
+            Logger::getLogger("alfaclick")->error("Exception: ", $e);
+        }
     }
 
     /**
@@ -33,19 +36,22 @@ class JshoppingControllerHutkigrosh extends JshoppingControllerBase
      */
     function complete()
     {
-        $order_id = $_REQUEST['order_id'];
-        $bill_id = $_REQUEST['bill_id'];
-        $order = JSFactory::getTable('order', 'jshop');
-        $order->load($order_id);
-        $pm_method = $order->getPayment();
-        $paymentsysdata = $pm_method->getPaymentSystemData();
-        $payment_system = $paymentsysdata->paymentSystem;
-        // проверяем что для указанного заказа оплата производилась через ХуткиГрош
-        if ($payment_system
-            && $pm_method->payment_class == pm_hg::MODULE_MACHINE_NAME
-            && $order->transaction == $bill_id) {
-            $pmconfigs = $pm_method->getConfigs();
-            $payment_system->complete($pmconfigs, $order, $pm_method);
+        try {
+            $orderNumber = $_REQUEST['order_number'];
+            $billId = $_REQUEST['bill_id'];
+            $order = JSFactory::getModel("hutkigrosh")->getOrderByOrderNumber($orderNumber);
+            $pm_method = $order->getPayment();
+            $paymentsysdata = $pm_method->getPaymentSystemData();
+            $payment_system = $paymentsysdata->paymentSystem;
+            // проверяем что для указанного заказа оплата производилась через ХуткиГрош
+            if ($payment_system
+                && $pm_method->payment_class == pm_hg::MODULE_MACHINE_NAME
+                && $order->transaction == $billId) {
+                $pmconfigs = $pm_method->getConfigs();
+                $payment_system->complete($pmconfigs, $order, $pm_method);
+            }
+        } catch (Throwable $e) {
+            Logger::getLogger("alfaclick")->error("Exception: ", $e);
         }
     }
 
@@ -58,16 +64,10 @@ class JshoppingControllerHutkigrosh extends JshoppingControllerBase
     {
         try {
             $billId = $_REQUEST['purchaseid'];
-            $order = jshopHutkigrosh::getOrderByTrxId($billId);
-            if (!isset($order) || !isset($order->order_id)) {
-                throw new Exception('Hutkigrosh: Can not detect order by billid[' . $billId . "]");
-            }
-            $pm_method = $order->getPayment();
-            $pmconfigs = $pm_method->getConfigs();
-            $controller = new ControllerNotifyJoomshopping(new ConfigurationWrapperJoomshopping($pmconfigs));
+            $controller = new ControllerNotify();
             $controller->process($billId);
-        } catch (Exception $e) {
-            saveToLog("payment.log", $e->getMessage());
+        } catch (Throwable $e) {
+            HgLogger::getLogger("callback")->error("Exception:", $e);
         }
     }
 }

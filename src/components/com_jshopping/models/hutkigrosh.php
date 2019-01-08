@@ -2,7 +2,7 @@
 
 defined('_JEXEC') or die();
 
-class jshopHutkigrosh extends jshopBase
+class JshoppingModelHutkigrosh extends JModelLegacy
 {
 
     /**

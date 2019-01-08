@@ -8,27 +8,21 @@
 
 
 use esas\hutkigrosh\controllers\ControllerAddBill;
-use esas\hutkigrosh\controllers\ControllerWebpayFormJoomshopping;
+use esas\hutkigrosh\controllers\ControllerWebpayFormSimple;
 use esas\hutkigrosh\protocol\BillNewRs;
+use esas\hutkigrosh\Registry;
+use esas\hutkigrosh\view\client\CompletionPanel;
 use esas\hutkigrosh\wrappers\ConfigurationWrapperJoomshopping;
 use esas\hutkigrosh\wrappers\OrderWrapperJoomshopping;
+use JFactory;
+use Joomla\CMS\Uri\Uri;
 
 defined('_JEXEC') or die('Restricted access');
-require_once(JPATH_SITE . '/components/com_jshopping/payments/pm_hg/SimpleAutoloader.php');
+require_once(JPATH_SITE . '/components/com_jshopping/payments/pm_hg/init.php');
 
 class pm_hg extends PaymentRoot
 {
     const MODULE_MACHINE_NAME = 'pm_hg';
-
-    private $logger;
-
-    /**
-     * pm_hg constructor.
-     */
-    public function __construct()
-    {
-        $this->logger = Logger::getLogger(pm_hg::class);
-    }
 
     /**
      * Отображение формы с настройками платежного шлюза (админка)
@@ -36,8 +30,16 @@ class pm_hg extends PaymentRoot
      */
     function showAdminFormParams($params)
     {
-        $configurationWrapper = new ConfigurationWrapperJoomshopping($params);
-        include(dirname(__FILE__) . '/adminparamsform.php');
+        try {
+            $configForm = Registry::getRegistry()->getConfigForm();
+            if (is_array($_SESSION["pm_params"]) && !$configForm->validateAll($_SESSION["pm_params"])) {
+                JFactory::getApplication()->enqueueMessage("Wrong settings", 'error');
+            }
+            echo $configForm->generate();
+        } catch (Throwable $e) {
+            Logger::getLogger("admin")->error("Exception: ", $e);
+            JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+        }
     }
 
     const HG_RESP_CODE_OK = '0';
@@ -95,28 +97,33 @@ class pm_hg extends PaymentRoot
      * выставления счета к шлюзу и редирект на следующий step
      * @param $pmconfigs
      * @param $order
-     * @throws Exception
+     * @throws Throwable
      */
     function showEndForm($pmconfigs, $order)
     {
-        $configurationWrapper = new ConfigurationWrapperJoomshopping($pmconfigs);
-        $orderWrapper = new OrderWrapperJoomshopping($order);
-        $controller = new ControllerAddBill($configurationWrapper);
-        /**
-         * @var BillNewRs
-         */
-        $addBillRs = $controller->process($orderWrapper);
-        /**
-         * На этом этапе мы только выполняем запрос к HG для добавления счета. Мы не показываем итоговый экран
-         * (с кнопками webpay и alfaclick), а выполняем автоматический редирект на step7
-         **/
-        $redirectUrl = "index.php?option=com_jshopping&controller=checkout&task=step7" .
-            "&js_paymentclass=" . self::MODULE_MACHINE_NAME .
-            "&hg_status=" . $addBillRs->getResponseCode() .
-            "&order_id=" . $order->order_id;
-        if ($addBillRs->getBillId())
-            $redirectUrl .= "&bill_id=" . $addBillRs->getBillId();
-        JFactory::getApplication()->redirect($redirectUrl);
+        try {
+            $configurationWrapper = new ConfigurationWrapperJoomshopping($pmconfigs);
+            $orderWrapper = new OrderWrapperJoomshopping($order);
+            $controller = new ControllerAddBill($configurationWrapper);
+            /**
+             * @var BillNewRs
+             */
+            $addBillRs = $controller->process($orderWrapper);
+            /**
+             * На этом этапе мы только выполняем запрос к HG для добавления счета. Мы не показываем итоговый экран
+             * (с кнопками webpay и alfaclick), а выполняем автоматический редирект на step7
+             **/
+            $redirectUrl = "index.php?option=com_jshopping&controller=checkout&task=step7" .
+                "&js_paymentclass=" . self::MODULE_MACHINE_NAME .
+                "&hg_status=" . $addBillRs->getResponseCode() .
+                "&order_id=" . $order->order_id;
+            if ($addBillRs->getBillId())
+                $redirectUrl .= "&bill_id=" . $addBillRs->getBillId();
+            JFactory::getApplication()->redirect($redirectUrl);
+        } catch (Throwable $e) {
+            Logger::getLogger("payment")->error("Exception:", $e);
+            JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+        }
     }
 
 
@@ -138,24 +145,36 @@ class pm_hg extends PaymentRoot
      * @param $pmconfigs
      * @param $order
      * @param $payment
+     * @throws Throwable
      */
     function complete($pmconfigs, $order, $payment)
     {
-        $configurationWrapper = new ConfigurationWrapperJoomshopping($pmconfigs);
-        $orderWrapper = new OrderWrapperJoomshopping($order);
-        $completion_text = $configurationWrapper->cookCompletionText($orderWrapper);
-        if ($configurationWrapper->isAlfaclickButtonEnabled()) {
-            $alfaclick_billID = $orderWrapper->getBillId();
-            $alfaclick_phone = $order->phone;
-            $alfaclick_url = self::generateControllerPath("alfaclick");
+        try {
+            $orderWrapper = new OrderWrapperJoomshopping($order);
+            $configurationWrapper = new  ConfigurationWrapperJoomshopping($pmconfigs);
+            $completionPanel = new CompletionPanel($orderWrapper);
+            if ($configurationWrapper->isAlfaclickSectionEnabled()) {
+                $completionPanel->setAlfaclickUrl(self::generateControllerPath("alfaclick"));
+            }
+            if ($configurationWrapper->isWebpaySectionEnabled()) {
+                $controller = new ControllerWebpayFormSimple(Uri::root() . self::generateControllerPath("complete") .
+                    "&order_number=" . $orderWrapper->getOrderNumber() .
+                    "&bill_id=" . $orderWrapper->getBillId());
+                $webpayResp = $controller->process($orderWrapper);
+                $completionPanel->setWebpayForm($webpayResp->getHtmlForm());
+                if (array_key_exists('webpay_status', $_REQUEST))
+                    $completionPanel->setWebpayStatus($_REQUEST['webpay_status']);
+            }
+            $completionPanel->getViewStyle()
+                ->setMsgUnsuccessClass("alert alert-error")
+                ->setMsgSuccessClass("alert alert-info")
+                ->setWebpayButtonClass("btn btn-success")
+                ->setAlfaclickButtonClass("btn btn-success");
+            $completionPanel->render();
+        } catch (Throwable $e) {
+            Logger::getLogger("payment")->error("Exception:", $e);
+            JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
         }
-        if ($configurationWrapper->isWebpayButtonEnabled()) {
-            $controller = new ControllerWebpayFormJoomshopping($configurationWrapper);
-            $webpayResp = $controller->process($orderWrapper);
-            $webpay_form = $webpayResp->getHtmlForm();
-            $webpay_status = $_REQUEST['webpay_status']; // ???
-        }
-        include(JPATH_SITE . '/components/com_jshopping/payments/pm_hg/completion.php');
     }
 
     /**
@@ -168,4 +187,5 @@ class pm_hg extends PaymentRoot
         return "index.php?option=com_jshopping&controller=hutkigrosh&task=" . $task;
     }
 }
+
 ?>

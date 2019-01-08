@@ -20,9 +20,9 @@ class OrderWrapperJoomshopping extends OrderWrapper
      */
     public function __construct($order)
     {
+        parent::__construct();
         $this->order = $order;
     }
-
 
     /**
      * Уникальный номер заказ в рамках CMS
@@ -148,6 +148,6 @@ class OrderWrapperJoomshopping extends OrderWrapper
      */
     public function saveBillId($billId)
     {
-        //не испольхуется, т.к привязка  сохраняется на уровне самой СCMS
+        //не испольхуется, т.к привязка  сохраняется на уровне самой CMS
     }
 }
