@@ -1,6 +1,10 @@
 ## Модуль интеграции с CMS Joomla 3.x (с корзиной Joomshopping 4.x)
 
 Данный модуль обеспечивает взаимодействие между интернет-магазином на базе CMS Joomla и сервисом платежей [ХуткiГрош](https://hutkigrosh.by)
+
+
+### Внимание ### 
+Данная библиотека больше не поддерживается. Вся текущая разработка перенесена в проект [cmsgate-joomshopping-hutkigrosh](https://bitbucket.esas.by/projects/CG/repos/cmsgate-joomshopping-hutkigrosh/browse)
   
 ### Инструкция по установке:
 1. Создайте резервную копию вашего магазина и базы данных
